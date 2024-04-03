@@ -10,22 +10,22 @@ import { useEffect, useState } from "react";
 export default function Apply() {
     
     const [apply, setApply] = useState<ShowApply[]>([]);
+    const fetchApply = async () => {
+        try {
+            const fetch: ShowApply[] = await showApply();
+            setApply(fetch);
+        } catch (error) {
+            console.error("Error fetching jobs:", error);
+        }
+    };
+
     useEffect(() => {
         const interval = setInterval(() => {
             checkExp();
         }
         , 1000);
 
-        const fetchApply = async () => {
-            try {
-                const fetch: ShowApply[] = await showApply();
-                setApply(fetch);
-            } catch (error) {
-                console.error("Error fetching jobs:", error);
-            }
-        };
         fetchApply();
-
         return () => clearInterval(interval);
     }, []);
 
@@ -38,6 +38,7 @@ export default function Apply() {
             <Sidebar />
             <main className="ml-60">
             <Navbar />
+            { apply.length === 0 && <div className="text-center p-8">No applications</div> }
             {apply.map((apply) => (
                 <ApplyCard key={apply.id} apply={apply} onWithdraw={() => handleWithdraw(apply.id)} />
             ))}

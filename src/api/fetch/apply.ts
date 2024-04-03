@@ -1,7 +1,6 @@
 'use server'
 import { cookies } from "next/headers";
 import { ShowApply } from "../model/apply";
-import Swal from "sweetalert2";
 
      export const applyJob = async (jobId: number) : Promise<string> => {
         const response = await fetch(`http://localhost:5001/api/apply/${jobId}`, {
@@ -15,7 +14,7 @@ import Swal from "sweetalert2";
         if (response.ok) {
             return "Success apply job";
         } else {
-            if (response.status === 401) {
+            if (response.status === 403) {
                 throw new Error("Unauthorized");
             }
             throw new Error("Failed to apply job");
@@ -35,7 +34,7 @@ import Swal from "sweetalert2";
             const data : ShowApply[] = await response.json();
             return data;
         } else {
-            if (response.status === 401) {
+            if (response.status === 403) {
                 throw new Error("Unauthorized");
             }
             throw new Error("Failed to show apply");
@@ -54,10 +53,9 @@ import Swal from "sweetalert2";
         if (response.ok) {
             return "Success withdraw apply";
         } else {
-            if (response.status === 401) {
+            if (response.status === 403) {
                 throw new Error("Unauthorized");
             }
             throw new Error("Failed to withdraw apply");
         }
     }
-

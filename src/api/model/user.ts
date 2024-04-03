@@ -7,3 +7,10 @@ export type UserAuth = {
     data : UserData,
     token : string
 }
+export type UserRegist = {
+    username: string,
+    name: string,
+    email: string,
+    company: string,
+    password: string,
+}

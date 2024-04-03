@@ -3,27 +3,29 @@ import { deleteJob, getJobsByRecId } from "@/api/fetch/job";
 import { Job } from "@/api/model/job";
 import Navbar from "@/components/navbar"
 import Sidebar from "@/components/sidebar"
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 export default function JobPage() {
-    const [jobs, setJobs] = useState<Job[]>([] as Job[]);
+    const [jobs, setJobs] = useState<Job[]>([]);
 
-    useEffect(() => {
-        const fetchJobs = async () => {
-            try {
-                const fetchedJobs: Job[] = await getJobsByRecId();
-                setJobs(fetchedJobs);
-            } catch (error) {
-                console.error("Error fetching jobs:", error);
-            }
-        };
+    const fetchJobs = async () => {
+        try {
+            const fetchedJobs: Job[] = await getJobsByRecId();
+            setJobs(fetchedJobs);
+        } catch (error) {
+            console.error("Error fetching jobs:", error);
+        }
+    };
+
+    useEffect(() => {    
         fetchJobs();
     }, []);
 
-    const del = async (id: number) => {
+    const handleDelete = async (id: number) => {
         try {
-            Swal.fire({
+            const result = await Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
                 icon: 'warning',
@@ -31,22 +33,26 @@ export default function JobPage() {
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, delete it!'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    await deleteJob(id);
-                    const fetchedJobs: Job[] = await getJobsByRecId();
-                    setJobs(fetchedJobs);
-                    Swal.fire(
-                        'Deleted!',
-                        'Your job has been deleted.',
-                        'success'
-                    )
-                }
-            })
+            });
+            
+            if (result.isConfirmed) {
+                await deleteJob(id);
+                setJobs(jobs.filter(job => job.id !== id));
+                Swal.fire(
+                    'Deleted!',
+                    'Your job has been deleted.',
+                    'success'
+                );
+            }
         } catch (error) {
             console.error("Error deleting job:", error);
+            Swal.fire(
+                'Error!',
+                'An error occurred while deleting the job.',
+                'error'
+            );
         }
-    }
+    };
 
     return (
         <>
@@ -54,7 +60,10 @@ export default function JobPage() {
             <main className="ml-60">
                 <Navbar />
                 <div className="p-4">
-                    <button className="bg-blue-500 p-2 m-2 w-30 h-10 text-white rounded-md">Create Job</button>
+                    <Link href="/create">          
+                     <button className="bg-blue-500 p-2 m-2 w-30 h-10 text-white rounded-md">Create Job</button>
+                    </Link>
+                    { jobs.length === 0 && <div className="text-center p-8">No jobs</div>}
                     {jobs.map((job) => (
                         <div className="card p-4 m-2 rounded-md">
                         <div className="flex justify-between items-center border-b-2">
@@ -69,9 +78,14 @@ export default function JobPage() {
                                 <p className="text-gray-800">{job.description}</p>
                                 <p className="text-gray-800">{job.requirement}</p>
                             </div>
-                            <div>
+                            <div>     
+                            <Link href={{
+                                pathname: '/update',
+                                query: { id: job.id },
+                            }}>                                
                                 <button className="bg-yellow-500 p-2 w-30 h-10 mx-2 text-white rounded-md">Edit</button>
-                                <button className="bg-red-500 p-2 w-30 h-10 text-white rounded-md" onClick={() => del(job.id)}>Delete</button>
+                            </Link>
+                                <button className="bg-red-500 p-2 w-30 h-10 text-white rounded-md" onClick={() => handleDelete(job.id)}>Delete</button>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 'use server'
 import { cookies } from "next/headers";
-import { UserAuth } from "../model/user";
+import { UserAuth, UserRegist } from "../model/user";
 import { decodeToken } from "../../utils/tokenSetting";
 
 export const login = async (username: string, password: string) => {
@@ -36,14 +36,14 @@ export const logout = async () => {
   cookies().delete('data');
 }
 
-export const registerApplicant = async (formData: FormData) => {
+export const registerApplicant = async (formData: UserRegist) => {
   const user = {
-    name: formData.get('full-name'),
-    username: formData.get('username'),
-    email: formData.get('email'),
-    password: formData.get('password'),
+    name: formData.name,
+    username: formData.username,
+    email: formData.email,
+    password: formData.password,
   }
-  const response = await fetch("http://localhost:5001/api/user/register/applicant", {
+  const response = await fetch("http://localhost:5001/api/user/registerApplicants", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -60,21 +60,18 @@ export const registerApplicant = async (formData: FormData) => {
     cookies().set('token', data.token)
     cookies().set('data', JSON.stringify(data.data))
   } else {
-    if (response.status === 401) {
-      throw new Error("Unauthorized");
-    }
-    throw new Error("Failed to register");
+    throw new Error(response.statusText);
   }
 }
-export const registerRecruiter = async (formData: FormData) => {
+export const registerRecruiter = async (formData: UserRegist) => {
   const user = {
-    name: formData.get('full-name'),
-    company: formData.get('company'),
-    username: formData.get('username'),
-    email: formData.get('email'),
-    password: formData.get('password'),
+    name: formData.name,
+    company: formData.company,
+    username: formData.username,
+    email: formData.email,
+    password: formData.password,
   }
-  const response = await fetch("http://localhost:5001/api/user/register/recruiter", {
+  const response = await fetch("http://localhost:5001/api/user/registerRecruiters", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -92,9 +89,6 @@ export const registerRecruiter = async (formData: FormData) => {
     cookies().set('token', data.token)
     cookies().set('data', JSON.stringify(data.data))
   } else {
-    if (response.status === 401) {
-      throw new Error("Unauthorized");
-    }
-    throw new Error("Failed to register");
+    throw new Error(response.statusText);
   }
 }
