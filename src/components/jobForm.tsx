@@ -143,7 +143,7 @@ export default function JobForm({ job, mode }: { job: Job | null; mode: string }
           />
         </div>
         <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">
-          Create
+          {mode === "update" ? "Update" : "Create"}
         </button>
       </form>
     </div>

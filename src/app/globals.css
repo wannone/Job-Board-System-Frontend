@@ -17,15 +17,7 @@
 }
 
 body {
-  background-image: linear-gradient(to right top, #a9c3dd, #becce2, #d1d6e5, #e0e1e9, #ededed);
-  background-attachment: fixed;
-  /* color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb)); */
+  background-color: #e5e5e5;
 }
 
 @layer utilities {
